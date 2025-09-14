@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CrudOpsSbApplication {
+public class DocManagerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CrudOpsSbApplication.class, args);
+		SpringApplication.run(DocManagerApplication.class, args);
 	}
 
 }

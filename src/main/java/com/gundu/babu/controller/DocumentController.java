@@ -6,6 +6,7 @@ import com.gundu.babu.repository.DocumentRepository;
 import com.gundu.babu.repository.FileTypeRepository;
 import com.gundu.babu.request.DocumentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +41,35 @@ public class DocumentController {
     @GetMapping
     public List<Document> getAllDocuments() {
         return documentRepository.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDocument(@PathVariable Long id) {
+        if (!documentRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        documentRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Document> updateDocument(@PathVariable Long id, @RequestBody Document updatedDoc) {
+        return documentRepository.findById(id)
+                .map(doc -> {
+                    doc.setName(updatedDoc.getName());
+                    doc.setFileName(updatedDoc.getFileName());
+                    doc.setFileSize(updatedDoc.getFileSize());
+
+                    // ✅ if you're storing fileType as relation
+                    if (updatedDoc.getFileType() != null && updatedDoc.getFileType().getId() ==0) {
+                        fileTypeRepository.findById(updatedDoc.getFileType().getId())
+                                .ifPresent(doc::setFileType);
+                    }
+
+                    Document saved = documentRepository.save(doc);
+                    return ResponseEntity.ok(saved);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }
 
